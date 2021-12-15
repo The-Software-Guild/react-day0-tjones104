@@ -7,9 +7,9 @@ chai.should();
 chai.use(chaiHttp);
 
 // Describe tests
-describe("Api Tests", function () {
+describe("Api Tests", () => {
   // Test GET
-  describe("GET /api/itemsIntake", function () {
+  describe("GET /api/itemsIntake", () => {
     it("Should GET all the items", (done) => {
       chai
         .request(server)
@@ -33,7 +33,7 @@ describe("Api Tests", function () {
   });
 
   // Test GET QUERY
-  describe("GET ONE /api/itemsIntake/:id", function () {
+  describe("GET ONE QUERY /api/itemsIntake/:id", () => {
     it("Should GET item/s with query", (done) => {
       const param = "?description=Cardboard";
       chai
@@ -52,20 +52,19 @@ describe("Api Tests", function () {
         });
     });
     it("Should NOT GET item/s with incorrect query", (done) => {
-      const param = "?descrip=Cardboard";
+      const param = "?type=1";
       chai
         .request(server)
         .get("/api/itemsIntake" + param)
         .end((err, res) => {
-          console.log(res.body);
-          res.should.have.status(200);
+          res.should.have.status(404);
           done();
         });
     });
   });
 
   // Test GET ONE
-  describe("GET ONE /api/itemsIntake/:id", function () {
+  describe("GET ONE /api/itemsIntake/:id", () => {
     it("Should GET ONE item passing id param", (done) => {
       const _id = "123";
       chai
@@ -97,7 +96,7 @@ describe("Api Tests", function () {
   });
 
   // Test POST
-  describe("POST /api/itemsIntake", function () {
+  describe("POST /api/itemsIntake", () => {
     it("Should POST a new item", (done) => {
       const item = {
         name: "Milk Jug",
@@ -143,7 +142,7 @@ describe("Api Tests", function () {
   });
 
   // Test PUT
-  describe("PUT /api/itemsIntake/:id", function () {
+  describe("PUT /api/itemsIntake/:id", () => {
     it("Should PUT an existing item passing id param", (done) => {
       const _id = "123";
       const item = {
@@ -190,7 +189,7 @@ describe("Api Tests", function () {
     });
   });
   //   // Test DELETE
-  describe("DELETE /api/itemsIntake/:id", function () {
+  describe("DELETE /api/itemsIntake/:id", () => {
     it("Should DELETE an existing item passing id param", (done) => {
       const _id = "123";
       chai

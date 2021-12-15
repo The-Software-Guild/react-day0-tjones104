@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
+const _ = require("underscore");
 
 // stored data array (ppu = price per unit)
 const recycledItems = [
@@ -24,42 +25,44 @@ const recycledItems = [
 
 // GET w/ Query
 router.get("/itemsIntake", (req, res) => {
-  if (req.query.name != undefined) {
-    res.status(200).send(
-      recycledItems.filter(function (recycledItems) {
-        return recycledItems.name == req.query.name;
-      })
-    );
-  } else if (req.query.description != undefined) {
-    res.status(200).send(
-      recycledItems.filter(function (recycledItems) {
-        return recycledItems.description == req.query.description;
-      })
-    );
-  } else if (req.query.recyclable != undefined) {
-    let recyclable =
-      req.query.recyclable === "true" ||
-      (req.query.recyclable === "false" ? false : req.query.recyclable);
-    res.status(200).send(
-      recycledItems.filter(function (recycledItems) {
-        return recycledItems.recyclable == recyclable;
-      })
-    );
-  } else if (Object.keys(req.query).length == 0) {
+  //console.log(req.query);
+
+  let query = req.query;
+  let deleteKeys = _.difference(
+    Object.keys(req.query),
+    Object.keys(recycledItems[0])
+  );
+  deleteKeys.forEach((key) => delete query[key]);
+
+  if (Object.keys(query).length != 0) {
+    if (query.recyclable != undefined) {
+      query.recyclable =
+        query.recyclable === "true" ||
+        (query.recyclable === "false" ? false : query.recyclable);
+    }
+    const filteredItems = recycledItems.filter((item) => {
+      let isValid = true;
+      for (key in query) {
+        isValid = isValid && item[key] == query[key];
+      }
+      return isValid;
+    });
+    res.status(200).send(filteredItems);
+  } else if (deleteKeys.length == 0) {
     res.status(200).send(recycledItems);
   } else {
-    res.status(200).send();
+    res.status(404).send("This query could not found");
   }
 });
 
 // GET ONE
 router.get("/itemsIntake/:id", (req, res) => {
   if (
-    recycledItems.findIndex(function (recycledItems) {
+    recycledItems.findIndex((recycledItems) => {
       return recycledItems._id == req.params.id;
     }) != -1
   ) {
-    let index = recycledItems.findIndex(function (recycledItems) {
+    let index = recycledItems.findIndex((recycledItems) => {
       return recycledItems._id == req.params.id;
     });
 
@@ -91,12 +94,12 @@ router.post("/itemsIntake", (req, res) => {
 // UPDATE
 router.put("/itemsIntake/:id", (req, res) => {
   if (
-    recycledItems.findIndex(function (recycledItems) {
+    recycledItems.findIndex((recycledItems) => {
       return recycledItems._id == req.params.id;
     }) != -1
   ) {
     let { name, description, recyclable, quantity, ppu } = req.body;
-    let index = recycledItems.findIndex(function (recycledItems) {
+    let index = recycledItems.findIndex((recycledItems) => {
       return recycledItems._id == req.params.id;
     });
     Object.assign(recycledItems[index], {
@@ -116,11 +119,11 @@ router.put("/itemsIntake/:id", (req, res) => {
 // DELETE
 router.delete("/itemsIntake/:id", (req, res) => {
   if (
-    recycledItems.findIndex(function (recycledItems) {
+    recycledItems.findIndex((recycledItems) => {
       return recycledItems._id == req.params.id;
     }) != -1
   ) {
-    let index = recycledItems.findIndex(function (recycledItems) {
+    let index = recycledItems.findIndex((recycledItems) => {
       return recycledItems._id == req.params.id;
     });
     recycledItems.splice(index, 1);

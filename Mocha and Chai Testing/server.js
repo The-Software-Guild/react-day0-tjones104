@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(morgan("dev"));
 
 // route initialize
-app.use("/api", require("./routes/api"));
+app.use("/api", require("./routes/itemsIntake"));
 
 // server startup logic
 const server = app.listen(PORT, () => {
