@@ -58,6 +58,7 @@ describe("Api Tests", () => {
         .get("/api/itemsIntake" + param)
         .end((err, res) => {
           res.should.have.status(404);
+          res.text.should.be.eq("This query could not found");
           done();
         });
     });
